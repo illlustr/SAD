@@ -1,20 +1,20 @@
 async function cat(ch) {
-    const the = await fetch(`sad/${ch}.html`);
+    const the = await fetch(`SAD/${ch}.html`);
     if (!the.ok) {
-        throw new Error(`T-T Error catching = ${ch}.html`);
+        throw new Error(`😭 Error catching = ${ch}.html`);
     }
     return the.text();
 }
 
-function turn(this, data) {
+function turn(th, is) {
     const dom = new DOMParser();
 
-    const doc = dom.parseFromString(this, 'text/html');
-    data.forEach((value, index) => {
-        const id = doc.querySelector(`[T-T="${index}"]`);
+    const doc = dom.parseFromString(th, 'text/html');
+    is.forEach((i, s) => {
+        const id = doc.querySelector(`[T-T="${s}"]`);
         if (!id) return;
 
-        const up = value.replace(/\n/g, '').trim();
+        const up = i.replace(/\n/g, '').trim();
         if (id) {
             switch (id.tagName) {
                 case 'IMG':
@@ -36,12 +36,12 @@ function turn(this, data) {
 }
 
 async function sad() {
-    const magic = document.querySelectorAll('[sad]');
+    const magic = document.querySelectorAll('[😭]');
     for (const element of magic) {
-        const ch = element.getAttribute('sad');
+        const ch = element.getAttribute('😭');
         const th = await cat(ch);
-        const dt = element.innerHTML.trim().split('):');
-        const sus = turn(th, dt);
+        const is = element.innerHTML.trim().split('||');
+        const sus = turn(th, is);
         element.outerHTML = sus;
     }
 }
@@ -49,8 +49,8 @@ async function sad() {
 window.onload = sad;
 
 
-// ░░░░░░░░░░░░░░░░░░░░░░░░░░░ Title: Sussy Awkward Design
-// ░░█▀█░█▀█░█░░░█░░░█░█░█▀▀░░ Act: replace element with template
+// ░░░░░░░░░░░░░░░░░░░░░░░░░░░ Title: Simply Awful Design
+// ░░█▀█░█▀█░█░░░█░░░█░█░█▀▀░░ Act: replace 😭 element with T-T template
 // ░░█░█░█▀█░░▀▄░░▀▄░▀▄▀░█▀▀░░ Cast[ user device ]
 // ░░▀░▀░▀░▀░░░▀░░░▀░░▀░░▀▀▀░░ Writers[ illlustr ]
 // ░ Projects ░░░░░░░░░░░░░░░░ https://github.com/naiiveprojects
