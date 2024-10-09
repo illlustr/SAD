@@ -10,8 +10,3 @@ simple template system for website, replace `😭` element with the `T-T` templa
 
 - Static site, no sad included
 - 😀
-
-### HowTo
-
-- `git clone https://github.com/illlustr/SAD.git`
-- ☕

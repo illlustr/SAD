@@ -1,5 +1,6 @@
 async function cat(ch) {
-    const the = await fetch(`SAD/${ch}.html`);
+    const sad = import.meta.url;
+    const the = await fetch(`${sad.substring(0, sad.lastIndexOf('/'))}/${ch}.html`);
     if (!the.ok) {
         throw new Error(`😭 Error catching = ${ch}.html`);
     }
@@ -8,9 +9,9 @@ async function cat(ch) {
 
 function turn(th, is) {
     const dom = new DOMParser();
+    const doc = dom.parseFromString(is, 'text/html');
 
-    const doc = dom.parseFromString(th, 'text/html');
-    is.forEach((i, s) => {
+    th.forEach((i, s) => {
         const id = doc.querySelector(`[T-T="${s}"]`);
         if (!id) return;
 
@@ -32,17 +33,15 @@ function turn(th, is) {
             }
         }
     });
+
     return doc.body.innerHTML;
 }
 
 async function sad() {
-    const magic = document.querySelectorAll('[😭]');
-    for (const element of magic) {
-        const ch = element.getAttribute('😭');
-        const th = await cat(ch);
-        const is = element.innerHTML.trim().split('||');
-        const sus = turn(th, is);
-        element.outerHTML = sus;
+    for (const pain of document.querySelectorAll('[😭]')) {
+        const th = pain.innerHTML.trim().split('||');
+        const is = await cat(pain.getAttribute('😭'));
+        pain.outerHTML = turn(th, is);
     }
 }
 
