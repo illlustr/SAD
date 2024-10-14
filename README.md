@@ -6,7 +6,15 @@ simple template system for website, replace `😭` element with the `T-T` templa
 
 **SAD** will save 5 minute of your time to code system like _Simply Awful Design™_
 
-### ToDo
+### Motive
 
-- Static site, no sad included
-- 😀
+for fun, & independent
+
+### Goal
+
+- ✅ dependency-free
+- 🔍 fun & easy to write
+- 🔍 small & simple
+- 🛠️ flexible & extendable
+- 🛠️ automated most of common things in page / blog
+- 🔜 generate static site, no sad included
