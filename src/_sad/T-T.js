@@ -1,48 +1,72 @@
-async function cat(ch) {
-    const sad = import.meta.url;
-    const the = await fetch(`${sad.substring(0, sad.lastIndexOf('/'))}/${ch}.html`);
-    if (!the.ok) {
-        throw new Error(`😭 Error catching = ${ch}.html`);
+const FIXED = '||';
+const SPLIT = '|\\';
+const DYNAMIC = '|+';
+const cache = new Map();
+async function catching(template) {
+    if (cache.has(template)) {
+        return cache.get(template);
     }
-    return the.text();
+    const response = await fetch(`${import.meta.url.substring(0, import.meta.url.lastIndexOf('/'))}/${template}.html`);
+    if (!response.ok) {
+        throw new Error(`Error fetching template: ${template}.html (Status: ${response.status})`);
+    }
+    const result = await response.text();
+    cache.set(template, result);
+    return result;
 }
-
-function turn(th, is) {
-    const dom = new DOMParser();
-    const doc = dom.parseFromString(is, 'text/html');
-    th.forEach((i, s) => {
-        const id = doc.querySelector(`[T-T="${s}"]`);
-        if (id) {
-            const up = i.replace(/\n/g, '').trim();
-            switch (id.tagName) {
-                case 'IMG':
-                    id.setAttribute('src', up);
-                    break;
-                case 'A':
-                    id.setAttribute('href', up);
-                    id.innerHTML = up;
-                    break;
-                case 'BUTTON':
-                    id.setAttribute('onclick', `window.open('${up}'); return true;`);
-                    break;
-                default:
-                    id.innerHTML = up;
+function update(element, value) {
+    if (element.tagName === 'IMG') {
+        element.src = value;
+    } else if (['A', 'BUTTON'].includes(element.tagName)) {
+        const [href, innerHTML] = value.split('~').map(item => item?.trim() || '');
+        if (href) {
+            if (element.tagName === 'BUTTON') {
+                element.setAttribute('onclick', `window.open('${href}', '_blank'); return false;`);
+            } else {
+                element.href = href;
             }
         }
-    });
-    return doc.body.innerHTML;
-}
-
-async function sad() {
-    for (const pain of document.querySelectorAll('[😭]')) {
-        const th = pain.innerHTML.trim().split('||');
-        const is = await cat(pain.getAttribute('😭'));
-        pain.outerHTML = turn(th, is);
+        if (innerHTML) {
+            element.innerHTML = innerHTML;
+        }
+    } else {
+        element.innerHTML = value;
     }
 }
+function populate(fixed, dynamic, template) {
+    const doc = new DOMParser().parseFromString(template, 'text/html');
+    fixed.forEach((value, id) => {
+        const element = doc.querySelector(`[T-T="${id}"]`);
+        if (element) {
+            update(element, value.trim().replace(/\n/g, ''));
+        }
+    });
+    const holder = doc.querySelector(`[T-T="+"]`);
+    if (holder && dynamic.length > 0) {
+        dynamic.forEach(value => {
+            const element = holder.cloneNode(true);
+            update(element, value.trim().replace(/\n/g, ''));
+            holder.parentNode.insertBefore(element, holder);
+        });
+        holder.remove();
+    }
+    return doc.body.innerHTML;
+}
+async function init() {
+    const elements = document.querySelectorAll('[😭]');
+    const promises = Array.from(elements).map(async (element) => {
+        const values = element.innerHTML.trim();
+        const [fc, dc] = values.split(SPLIT).map(item => item.trim());
+        const fixed = fc.split(FIXED).map(item => item.trim()).filter(Boolean);
+        const dynamic = dc ? dc.split(DYNAMIC).map(item => item.trim()).filter(Boolean) : [];
+        const page = element.getAttribute('😭');
+        const template = await catching(page);
+        element.outerHTML = populate(fixed, dynamic, template);
+    });
 
-window.onload = sad;
-
+    await Promise.all(promises);
+}
+window.addEventListener('DOMContentLoaded', init);
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░ Title: Simply Awful Design
 // ░░█▀█░█▀█░█░░░█░░░█░█░█▀▀░░ Act: replace 😭 element with T-T template
 // ░░█░█░█▀█░░▀▄░░▀▄░▀▄▀░█▀▀░░ Cast[ user device ]
